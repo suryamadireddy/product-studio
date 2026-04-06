@@ -3,6 +3,7 @@ import { supabaseAdmin } from "@/lib/supabase/server";
 import { getCurrentArtifactsForProject } from "@/lib/server/artifacts";
 import { CurrentArtifactsSection } from "@/components/private-studio/current-artifacts-section";
 import { GenerateCoreArtifactsButton } from "@/components/projects/generate-core-artifacts-button";
+import { PublishProjectButton } from "@/components/projects/publish-project-button";
 
 export default async function ProjectDetailPage({
   params,
@@ -31,11 +32,10 @@ export default async function ProjectDetailPage({
 
         <div className="mt-4">
           <GenerateCoreArtifactsButton slug={project.slug} />
+          <PublishProjectButton slug={project.slug} />
         </div>
 
-        <p className="mt-3 text-sm text-gray-500">
-          Status: {project.status}
-        </p>
+        <p className="mt-3 text-sm text-gray-500">Status: {project.status}</p>
       </header>
 
       <section className="rounded-lg border p-6">
@@ -60,7 +60,10 @@ export default async function ProjectDetailPage({
       </section>
 
       <div className="mt-10">
-        <CurrentArtifactsSection artifacts={currentArtifacts} />
+        <CurrentArtifactsSection
+          slug={project.slug}
+          artifacts={currentArtifacts}
+        />
       </div>
     </main>
   );
