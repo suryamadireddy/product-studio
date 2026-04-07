@@ -1,11 +1,52 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { supabaseAdmin } from "@/lib/supabase/server";
 import { getCurrentArtifactsForProject } from "@/lib/server/artifacts";
-import { CurrentArtifactsSection } from "@/components/private-studio/current-artifacts-section";
-import { GenerateCoreArtifactsButton } from "@/components/projects/generate-core-artifacts-button";
-import { PublishProjectButton } from "@/components/projects/publish-project-button";
+import type { ArtifactType } from "@/lib/types";
+import { Header } from "@/components/public/header";
+import { ChatBox } from "@/components/public/chat-box";
+import { ArtifactExplorer } from "@/components/public/artifact-explorer";
 
-export default async function ProjectDetailPage({
+const ARTIFACT_ORDER: ArtifactType[] = [
+  "brief",
+  "synthesis",
+  "prd",
+  "directions",
+];
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+
+  const { data: project, error } = await supabaseAdmin
+    .from("projects")
+    .select("title, summary, raw_idea")
+    .eq("slug", slug)
+    .eq("is_public", true)
+    .eq("status", "published")
+    .single();
+
+  if (error || !project) {
+    return {
+      title: "Project Not Found",
+    };
+  }
+
+  const description =
+    project.summary ??
+    project.raw_idea?.slice(0, 160) ??
+    "Research-backed product case study.";
+
+  return {
+    title: `${project.title} | KSM Studio`,
+    description,
+  };
+}
+
+export default async function WorkProjectPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
@@ -16,6 +57,8 @@ export default async function ProjectDetailPage({
     .from("projects")
     .select("*")
     .eq("slug", slug)
+    .eq("is_public", true)
+    .eq("status", "published")
     .single();
 
   if (error || !project) {
@@ -24,46 +67,52 @@ export default async function ProjectDetailPage({
 
   const currentArtifacts = await getCurrentArtifactsForProject(project.id);
 
+  const artifactMap = new Map(
+    currentArtifacts.map((artifact) => [
+      artifact.artifact_type as ArtifactType,
+      artifact,
+    ]),
+  );
+
   return (
-    <main className="mx-auto max-w-4xl p-8">
-      <header className="mb-8">
-        <p className="text-sm text-gray-500">Private Studio</p>
-        <h1 className="mt-2 text-3xl font-semibold">{project.title}</h1>
+    <main className="min-h-screen bg-background">
+      <Header />
 
-        <div className="mt-4">
-          <GenerateCoreArtifactsButton slug={project.slug} />
-          <PublishProjectButton slug={project.slug} />
-        </div>
+      <div className="mx-auto max-w-5xl px-6 py-12">
+        <header className="mb-10">
+          <p className="text-sm text-gray-500">Project</p>
 
-        <p className="mt-3 text-sm text-gray-500">Status: {project.status}</p>
-      </header>
+          <h1 className="mt-2 text-4xl font-semibold tracking-tight">
+            {project.title}
+          </h1>
 
-      <section className="rounded-lg border p-6">
-        <h2 className="text-lg font-medium">Raw Idea</h2>
-        <p className="mt-2 whitespace-pre-wrap text-sm leading-7">
-          {project.raw_idea}
-        </p>
+          {project.summary ? (
+            <p className="mt-4 max-w-3xl text-base leading-7 text-gray-700">
+              {project.summary}
+            </p>
+          ) : null}
+        </header>
 
-        {project.domain ? (
-          <div className="mt-6">
-            <h2 className="text-lg font-medium">Domain</h2>
-            <p className="mt-2 text-sm">{project.domain}</p>
-          </div>
-        ) : null}
+        <section className="mb-10 rounded-lg border p-6">
+          <h2 className="text-lg font-medium">Concept</h2>
+          <p className="mt-4 whitespace-pre-wrap text-sm leading-7 text-gray-800">
+            {project.raw_idea}
+          </p>
+        </section>
 
-        {project.intended_audience ? (
-          <div className="mt-6">
-            <h2 className="text-lg font-medium">Intended Audience</h2>
-            <p className="mt-2 text-sm">{project.intended_audience}</p>
-          </div>
-        ) : null}
-      </section>
-
-      <div className="mt-10">
-        <CurrentArtifactsSection
-          slug={project.slug}
-          artifacts={currentArtifacts}
+        <ArtifactExplorer
+          artifacts={ARTIFACT_ORDER.map((artifactType) =>
+            artifactMap.get(artifactType),
+          )
+            .filter(Boolean)
+            .map((artifact) => ({
+              artifact_type: artifact!.artifact_type as ArtifactType,
+              content_md: artifact!.content_md,
+              version: artifact!.version,
+            }))}
         />
+
+        <ChatBox slug={slug} />
       </div>
     </main>
   );

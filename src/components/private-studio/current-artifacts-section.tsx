@@ -67,7 +67,9 @@ export function CurrentArtifactsSection({ slug, artifacts }: Props) {
               </>
             ) : (
               <p className="text-sm text-gray-400">
-                No {artifactType} artifact yet.
+                {artifactType === "directions"
+                  ? "Prototype directions will be generated in a later step."
+                  : `No ${artifactType} artifact yet.`}
               </p>
             )}
           </article>

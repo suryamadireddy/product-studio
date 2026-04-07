@@ -121,10 +121,61 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   html {
     @apply font-sans;
+  }
+}
+
+@layer components {
+  .artifact-markdown {
+    @apply max-w-none text-[15px] leading-7 text-foreground;
+  }
+
+  .artifact-markdown h1 {
+    @apply mt-0 mb-4 font-serif text-2xl font-normal tracking-tight text-foreground;
+  }
+
+  .artifact-markdown h2 {
+    @apply mt-8 mb-3 font-serif text-xl font-normal tracking-tight text-foreground;
+  }
+
+  .artifact-markdown h3 {
+    @apply mt-6 mb-2 text-base font-semibold text-foreground;
+  }
+
+  .artifact-markdown p {
+    @apply my-3 text-muted-foreground;
+  }
+
+  .artifact-markdown ul {
+    @apply my-4 list-disc space-y-2 pl-5 text-muted-foreground;
+  }
+
+  .artifact-markdown li {
+    @apply pl-1;
+  }
+
+  .artifact-markdown strong {
+    @apply font-semibold text-foreground;
+  }
+
+  .artifact-markdown hr {
+    @apply my-6 border-border;
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

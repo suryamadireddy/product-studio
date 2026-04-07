@@ -17,7 +17,7 @@ export default async function DashboardPage() {
         <h1 className="text-3xl font-semibold">Dashboard</h1>
 
         <Link
-          href="/projects/new"
+          href="/privateStudio/projects/new"
           className="rounded-md bg-black px-4 py-2 text-white"
         >
           New Project
@@ -31,7 +31,7 @@ export default async function DashboardPage() {
           projects.map((project) => (
             <Link
               key={project.id}
-              href={`/projects/${project.slug}`}
+              href={`/privateStudio/projects/${project.slug}`}
               className="block rounded-lg border p-4 hover:bg-gray-50"
             >
               <div className="flex items-center justify-between">

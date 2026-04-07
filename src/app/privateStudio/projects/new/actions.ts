@@ -51,5 +51,5 @@ export async function createProject(formData: FormData) {
     throw new Error(error.message);
   }
 
-  redirect(`/projects/${slug}`);
+  redirect(`/privateStudio/projects/${slug}`);
 }

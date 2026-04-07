@@ -38,6 +38,12 @@ export async function createArtifact(input: CreateArtifactInput) {
   const supabase = supabaseAdmin;
 
   const version = await getNextArtifactVersion(input.projectId, input.artifactType);
+  await supabase
+    .from("artifacts")
+    .update({ is_current: false })
+    .eq("project_id", input.projectId)
+    .eq("artifact_type", input.artifactType)
+    .eq("is_current", true);
 
   const { data, error } = await supabase
     .from("artifacts")
@@ -49,6 +55,7 @@ export async function createArtifact(input: CreateArtifactInput) {
       generation_method: input.generationMethod ?? "initial",
       refinement_prompt: input.refinementPrompt ?? null,
       source_artifact_id: input.sourceArtifactId ?? null,
+      is_current: true,
     })
     .select()
     .single();
