@@ -179,3 +179,8 @@
     transform: translateY(0);
   }
 }
+
+.fade-up {
+  opacity: 0;
+  animation: fadeUp 0.6s ease-out forwards;
+}
