@@ -11,8 +11,6 @@ export const metadata: Metadata = {
 
 export default async function WorkIndexPage() {
   const projects = await getAllPublicProjects();
-  console.log("projects page count:", projects.length);
-  console.log("projects page data:", projects);
 
   return (
     <main className="min-h-screen bg-background">
@@ -26,8 +24,7 @@ export default async function WorkIndexPage() {
             </h1>
 
             <p className="mt-5 max-w-3xl text-base leading-8 text-muted-foreground md:text-lg">
-              A public index of research-backed product explorations published
-              through KSM Studio.
+            Selected product explorations grounded in real-world inefficiencies — from problem framing to solution design.
             </p>
           </div>
 
